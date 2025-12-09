@@ -1,0 +1,1916 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+}
+
+/* Layout */
+#app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+
+.nav {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.nav-btn:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.nav-btn.active {
+    background-color: #3498db;
+}
+
+.main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.page h2 {
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.8rem;
+    font-weight: 700;
+    padding: 0.5rem 0;
+}
+
+.content {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+/* Tabs - Duolingo風 */
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid #e5e5e5;
+    margin-bottom: 1.5rem;
+    padding: 0 0.5rem;
+    background: rgba(248, 249, 250, 0.5);
+    border-radius: 16px 16px 0 0;
+}
+/* タブボタン - Duolingo風 */
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    color: #7f8c8d;
+    border-bottom: 3px solid transparent;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+    border-radius: 12px 12px 0 0;
+}
+
+.tab-btn::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #3498db 0%, #2980b9 100%);
+    transition: width 0.3s ease;
+}
+
+.tab-btn:hover {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
+
+.tab-btn.active {
+    color: #3498db;
+    background: rgba(52, 152, 219, 0.1);
+    font-weight: 700;
+}
+
+.tab-btn.active::before {
+    width: 80%;
+}
+
+/* Schedule */
+#schedule-container {
+    position: relative;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.schedule-view { display: none; }
+.schedule-view.active { display: block; }
+
+/* Today view (1日の縦タイムライン) - Duolingo風 */
+.day-grid {
+    position: relative;
+    width: 100%;
+    min-width: 320px;
+    height: 1440px; /* 24h * 60min */
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: none;
+    border-radius: 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    display: flex; /* flexboxで時間ラベルとタイムラインを横並び */
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+.day-grid .hour-row {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 60px; /* 60min */
+    border-top: 1px solid #f0f0f0;
+    pointer-events: none;
+}
+.day-grid .half-hour {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 30px; /* 30min */
+    border-top: 1px dashed #f7f7f7;
+    pointer-events: none;
+}
+.time-labels {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 1440px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    z-index: 10;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    pointer-events: none; /* スクロールを妨げない */
+    align-self: flex-start; /* flexbox内で上端に配置 */
+    border-radius: 20px 0 0 20px;
+}
+.time-labels .time {
+    position: absolute;
+    transform: translateY(-8px);
+    padding-left: 4px;
+}
+.timeline-wrapper {
+    position: relative;
+    flex: 1; /* 残りのスペースを使用 */
+    height: 1440px;
+    min-height: 1440px;
+    overflow: visible; /* スクロールは親のday-gridで管理 */
+    touch-action: pan-y; /* スクロールを許可（ドラッグ時はJSでnoneに変更） */
+}
+
+/* ブロック共通 - Duolingo風 */
+.slot-block {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    border-radius: 16px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    min-height: 48px; /* タッチターゲット最小サイズ */
+    font-size: 0.9rem;
+    padding: 8px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid rgba(255,255,255,0.3);
+}
+
+.slot-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.slot-class { 
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+}
+
+.slot-on { 
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.slot-off { 
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+}
+
+.slot-work { 
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+}
+
+/* 週ビュー（縦カラム7本・日曜開始） - Duolingo風 */
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    min-width: 320px;
+    padding: 0.5rem;
+}
+
+.week-day-column {
+    position: relative;
+    height: 720px; /* 圧縮表示 */
+    min-height: 720px;
+    border: none;
+    border-radius: 16px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    touch-action: pan-y;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.week-day-column:hover {
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+}
+
+.week-timeline {
+    position: relative;
+    min-height: 720px;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+.week-time-marker {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+}
+.week-day-header {
+    text-align: center;
+    padding: 12px 0;
+    font-weight: 700;
+    font-size: 0.9rem;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    border-radius: 16px 16px 0 0;
+    margin-bottom: 4px;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+/* 月ビュー（簡易インジケータ: 件数バッジ） - Duolingo風 */
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    min-width: 320px;
+    padding: 0.5rem;
+}
+
+.month-cell {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: none;
+    border-radius: 16px;
+    padding: 12px;
+    min-height: 80px;
+    position: relative;
+    touch-action: manipulation;
+    min-width: 48px; /* タッチターゲット最小サイズ */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.month-cell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.month-cell .date {
+    font-size: 0.95rem;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: #fff;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    min-width: 24px;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+    animation: pulseBadge 2s ease-in-out infinite;
+}
+
+@keyframes pulseBadge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* User Info */
+.user-info {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #ecf0f1;
+    border-radius: 4px;
+}
+
+/* Buttons - Duolingo風 */
+.btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 0.5rem 0.5rem 0.5rem 0;
+    position: relative;
+    overflow: hidden;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(52, 152, 219, 0.5);
+}
+
+.btn-primary:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    color: white;
+    box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(149, 165, 166, 0.5);
+}
+
+.btn-secondary:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+/* Settings */
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.settings-section h3 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.setting-item {
+    margin-bottom: 1rem;
+}
+
+.setting-item label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.setting-item select,
+.setting-item input {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    width: 200px;
+}
+
+/* Footer */
+.footer {
+    background-color: #fff;
+    border-top: 1px solid #e5e5e5;
+    margin-top: auto;
+}
+
+.footer-copyright {
+    text-align: center;
+    padding: 0.5rem 1rem;
+    color: #7f8c8d;
+    font-size: 0.75rem;
+}
+
+/* フッターナビゲーション */
+.nav-footer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.5rem 0;
+    background-color: #fff;
+    border-top: 1px solid #e5e5e5;
+}
+
+.nav-footer-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    color: #7f8c8d;
+    transition: all 0.3s;
+    flex: 1;
+    min-height: 64px;
+    border-radius: 8px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.nav-footer-btn:active {
+    background-color: #f5f5f5;
+}
+
+.nav-footer-btn.active {
+    color: #3498db;
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    display: block;
+    object-fit: contain;
+}
+
+.nav-icon img {
+    width: 100%;
+    height: 100%;
+}
+
+.nav-footer-btn.active .nav-icon {
+    opacity: 1;
+}
+
+.nav-footer-btn:not(.active) .nav-icon {
+    opacity: 0.6;
+}
+
+.nav-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Googleログインボタン */
+.btn-google {
+    background-color: #fff;
+    color: #4285f4;
+    border: 1px solid #dadce0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+}
+
+.btn-google:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.btn-google svg {
+    flex-shrink: 0;
+}
+
+/* ログイン画面 */
+.login-page-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 200px);
+    padding: 2rem;
+}
+
+.login-container {
+    background: white;
+    border-radius: 16px;
+    padding: 3rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.login-container h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.login-subtitle {
+    font-size: 1rem;
+    color: #7f8c8d;
+    margin-bottom: 2rem;
+}
+
+/* ログインセクション */
+.login-section {
+    text-align: center;
+    padding: 0;
+}
+
+.login-section h3 {
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.login-section p {
+    margin-bottom: 1.5rem;
+    color: #7f8c8d;
+}
+
+.logged-in-section {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.logged-in-section h3 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.user-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.user-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-details {
+    text-align: center;
+}
+
+.user-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+}
+
+.user-email {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+/* FAB (フローティングアクションボタン) - Duolingo風 */
+.fab-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 8px 24px rgba(52, 152, 219, 0.4), 0 4px 12px rgba(0,0,0,0.15);
+    cursor: pointer;
+    display: none; /* デフォルトで非表示（ログイン後のみ表示） */
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+    animation: floatFab 3s ease-in-out infinite;
+}
+
+@keyframes floatFab {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.fab-icon {
+    width: 28px;
+    height: 28px;
+    display: block;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.fab-btn:hover {
+    transform: scale(1.15) translateY(-4px);
+    box-shadow: 0 12px 32px rgba(52, 152, 219, 0.5), 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.fab-btn:active {
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
+}
+
+/* モーダル - Duolingo風 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 24px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 2px solid #e5e5e5;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 24px 24px 0 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close-icon {
+    width: 24px;
+    height: 24px;
+    display: block;
+    object-fit: contain;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid #e5e5e5;
+    justify-content: flex-end;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid #e5e5e5;
+    border-radius: 16px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15), 0 4px 12px rgba(52, 152, 219, 0.2);
+    transform: translateY(-2px);
+}
+
+.form-input:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* 感情マトリクス */
+.emotion-matrix {
+    margin-top: 1rem;
+}
+
+.matrix-axis {
+    position: relative;
+    width: 100%;
+    padding: 40px 0 40px 40px;
+}
+
+.axis-label {
+    position: absolute;
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+
+.axis-y {
+    top: 0;
+    left: 0;
+    transform: rotate(-90deg);
+    transform-origin: left center;
+    white-space: nowrap;
+}
+
+.axis-x {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.matrix-grid {
+    width: 300px;
+    height: 300px;
+    border: 2px solid #e5e5e5;
+    border-radius: 8px;
+    position: relative;
+    background: linear-gradient(to top, #e8f5e9 0%, #fff 50%, #fff 100%),
+                linear-gradient(to right, #fff 0%, #fff 50%, #ffebee 100%);
+    background-blend-mode: multiply;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+.matrix-grid::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #ddd;
+}
+
+.matrix-grid::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #ddd;
+}
+
+.matrix-point {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3498db;
+    border: 2px solid white;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.matrix-values {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.matrix-values span {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* メイン画面 - Duolingo風デザイン */
+.main-mode {
+    display: none;
+    min-height: calc(100vh - 200px);
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 50%, #3498db 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 10s ease infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.main-mode.active {
+    display: block;
+}
+
+/* 背景装飾 */
+.main-mode::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.mode-content {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.character-container {
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.character {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: breathe 3s ease-in-out infinite, float 6s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+}
+
+.character-icon {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.character:hover .character-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+@keyframes breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.character-message {
+    font-size: 1.2rem;
+    color: white;
+    margin-top: 1rem;
+    font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    background: rgba(255,255,255,0.2);
+    padding: 1rem 1.5rem;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    display: inline-block;
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mode-info {
+    margin-bottom: 2rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: slideInUp 0.6s ease;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mode-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.mode-subtitle {
+    font-size: 1rem;
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.timer-display {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 1rem 0 0.5rem 0;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* タイマー進捗バー - Duolingo風 */
+.timer-progress-container {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.timer-progress-bar {
+    width: 100%;
+    height: 12px;
+    background: rgba(52, 152, 219, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.timer-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #3498db 0%, #2980b9 50%, #3498db 100%);
+    background-size: 200% 100%;
+    animation: progressGradient 2s linear infinite, progressFill 0.3s ease;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.4);
+    transition: width 0.3s ease;
+}
+
+@keyframes progressGradient {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+@keyframes progressFill {
+    from { opacity: 0.7; }
+    to { opacity: 1; }
+}
+
+.task-card-container {
+    margin: 2rem 0;
+    min-height: 200px;
+}
+
+.task-card {
+    background: white;
+    border: none;
+    border-radius: 24px;
+    padding: 2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.1);
+    position: relative;
+    touch-action: none;
+    user-select: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.task-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3498db 0%, #2980b9 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.task-card:hover::before {
+    transform: scaleX(1);
+}
+
+.task-card.swiping {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+}
+
+.no-task-message {
+    color: #95a5a6;
+    font-style: italic;
+    font-size: 1.1rem;
+    padding: 2rem;
+}
+
+.task-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.75rem;
+}
+
+.task-deadline {
+    font-size: 1rem;
+    color: #7f8c8d;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.task-emotion {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ecf0f1;
+}
+
+.swipe-hints {
+    display: flex;
+    justify-content: space-around;
+    margin: 1.5rem 0;
+    gap: 1rem;
+    font-size: 0.9rem;
+}
+
+.swipe-hint {
+    padding: 0.75rem 1.5rem;
+    background: rgba(255,255,255,0.9);
+    border-radius: 25px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+.swipe-hint.swipe-right {
+    color: #27ae60;
+    border: 2px solid #27ae60;
+}
+
+.swipe-hint.swipe-left {
+    color: #e67e22;
+    border: 2px solid #e67e22;
+}
+
+.swipe-hint:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        padding: 1rem;
+    }
+    
+    .main {
+        padding: 1rem;
+    }
+    
+    .content {
+        padding: 1rem;
+    }
+    
+    /* フッターナビゲーションのモバイル最適化 */
+    .nav-footer {
+        padding: 0.5rem 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    }
+}
+
+/* ダッシュボード - Duolingo風 */
+.dashboard-card {
+    background: white;
+    border-radius: 24px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    border: 2px solid rgba(52, 152, 219, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3498db 0%, #2980b9 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+}
+
+.dashboard-card:hover::before {
+    transform: scaleX(1);
+}
+
+/* タスク一覧スタイル */
+.task-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.task-list-section {
+    margin-bottom: 1rem;
+}
+
+.task-list-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.task-list-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.task-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 16px;
+    border-left: 4px solid #3498db;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.task-list-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    transition: width 0.3s ease;
+    opacity: 0.1;
+}
+
+.task-list-item:hover {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    transform: translateX(8px) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.task-list-item:hover::before {
+    width: 100%;
+}
+
+.task-list-item-completed {
+    opacity: 0.7;
+    border-left-color: #95a5a6;
+}
+
+.task-list-item-main {
+    flex: 1;
+}
+
+.task-list-item-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.task-list-item-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+
+.task-list-item-deadline,
+.task-list-item-emotion,
+.task-list-item-rescheduled,
+.task-list-item-completed-date {
+    display: inline-block;
+    margin-right: 1rem;
+}
+
+.task-status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.task-status-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.task-status-pending {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    color: #856404;
+}
+
+.task-status-in-progress {
+    background: linear-gradient(135deg, #d1ecf1 0%, #b3e5fc 100%);
+    color: #0c5460;
+}
+
+.task-status-completed {
+    background: linear-gradient(135deg, #d4edda 0%, #c8e6c9 100%);
+    color: #155724;
+}
+
+.task-status-postponed {
+    background: linear-gradient(135deg, #f8d7da 0%, #ffcdd2 100%);
+    color: #721c24;
+}
+
+.task-list-more {
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+.dashboard-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    border-bottom: 3px solid rgba(52, 152, 219, 0.2);
+    padding-bottom: 0.75rem;
+}
+
+.loading-message,
+.no-data-message {
+    color: #7f8c8d;
+    text-align: center;
+    padding: 2rem;
+    font-style: italic;
+}
+
+/* ユーザータイプ表示 - Duolingo風 */
+.user-type-display {
+    margin-top: 1rem;
+}
+
+.user-type-card {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 50%, #3498db 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 5s ease infinite;
+    border-radius: 20px;
+    color: white;
+    box-shadow: 0 8px 24px rgba(52, 152, 219, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.user-type-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: rotate 15s linear infinite;
+}
+
+.user-type-icon {
+    font-size: 4rem;
+    margin-bottom: 0.75rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    animation: bounce 3s ease-in-out infinite;
+}
+
+.user-type-card h4 {
+    font-size: 1.8rem;
+    margin: 0.75rem 0;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    color: white;
+}
+
+.user-type-card p {
+    margin: 1rem 0;
+    line-height: 1.6;
+}
+
+.user-type-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.3);
+    font-size: 0.9rem;
+}
+
+/* 今週の成果 */
+.weekly-achievements {
+    margin-top: 1rem;
+}
+
+.achievement-item {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 16px;
+    border-left: 4px solid #3498db;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.achievement-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    transition: width 0.3s ease;
+    opacity: 0.1;
+}
+
+.achievement-item:hover {
+    transform: translateX(8px) translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.achievement-item:hover::before {
+    width: 100%;
+}
+
+.achievement-item.highlight {
+    background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+    border-left-color: #e17055;
+    box-shadow: 0 6px 20px rgba(225, 112, 85, 0.3);
+    animation: highlightPulse 2s ease-in-out infinite;
+}
+
+@keyframes highlightPulse {
+    0%, 100% { box-shadow: 0 6px 20px rgba(225, 112, 85, 0.3); }
+    50% { box-shadow: 0 8px 24px rgba(225, 112, 85, 0.4); }
+}
+
+.achievement-icon {
+    font-size: 2.5rem;
+    margin-right: 1.5rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    animation: bounce 2s ease-in-out infinite;
+}
+
+.achievement-content {
+    flex: 1;
+}
+
+.achievement-content h4 {
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.achievement-content p {
+    margin: 0;
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* やる気の波分析 */
+.motivation-wave {
+    margin-top: 1rem;
+}
+
+.wave-graph {
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.wave-label {
+    font-size: 1rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.wave-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 0.75rem;
+    height: 200px;
+    padding: 1rem;
+    background: rgba(52, 152, 219, 0.05);
+    border-radius: 12px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.wave-bar-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    transition: transform 0.3s ease;
+}
+
+.wave-bar-item:hover {
+    transform: scale(1.05);
+}
+
+.wave-bar {
+    width: 80%;
+    background: linear-gradient(180deg, #3498db 0%, #2980b9 50%, #3498db 100%);
+    background-size: 100% 200%;
+    animation: waveGradient 3s ease infinite;
+    border-radius: 12px 12px 0 0;
+    min-height: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+@keyframes waveGradient {
+    0%, 100% { background-position: 0% 0%; }
+    50% { background-position: 0% 100%; }
+}
+
+.wave-hour {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.wave-insight {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+    border-radius: 16px;
+    text-align: center;
+    font-size: 1rem;
+    color: #2c3e50;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-left: 4px solid #27ae60;
+}
+
+.wave-insight p {
+    margin: 0.5rem 0;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .dashboard-card {
+        padding: 1rem;
+    }
+    
+    .user-type-card {
+        padding: 1rem;
+    }
+    
+    .user-type-icon {
+        font-size: 2rem;
+    }
+    
+    .wave-bars {
+        height: 150px;
+    }
+    
+    .achievement-item {
+        padding: 0.75rem;
+    }
+    
+    .achievement-icon {
+        font-size: 1.5rem;
+    }
+    
+    .nav-icon {
+        font-size: 1.25rem;
+    }
+    
+    /* ログイン画面のモバイル対応 */
+    .login-page-content {
+        min-height: calc(100vh - 150px);
+        padding: 1rem;
+    }
+    
+    .login-container {
+        padding: 2rem 1.5rem;
+    }
+    
+    .login-container h2 {
+        font-size: 1.5rem;
+    }
+    
+    .login-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .nav-label {
+        font-size: 0.7rem;
+    }
+    
+    /* メインコンテンツにフッター分の余白を追加 */
+    .main {
+        padding-bottom: 80px;
+    }
+    
+    .footer-copyright {
+        padding-bottom: 80px;
+        font-size: 0.7rem;
+    }
+    
+    /* FABのモバイル最適化 */
+    .fab-btn {
+        bottom: 100px;
+        right: 16px;
+        width: 56px;
+        height: 56px;
+        z-index: 999; /* 他の要素より前面に表示 */
+    }
+    
+    /* メイン画面でFABボタンを表示 */
+    #main-page.active ~ .fab-btn,
+    body:has(#main-page.active) .fab-btn {
+        display: flex !important;
+        visibility: visible !important;
+    }
+    
+    /* モーダルのモバイル最適化 */
+    .modal-content {
+        width: 95%;
+        max-height: 85vh;
+    }
+    
+    .matrix-grid {
+        width: 100%;
+        max-width: 300px;
+        height: 300px;
+    }
+    
+    /* メイン画面のモバイル最適化 */
+    .main-mode {
+        padding: 1rem;
+    }
+    
+    .character {
+        font-size: 4rem;
+    }
+    
+    .timer-display {
+        font-size: 2.5rem;
+    }
+    
+    .task-card {
+        padding: 1.5rem;
+    }
+    
+    /* スケジュール画面のモバイル最適化 */
+    .tabs {
+        gap: 0.5rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .tab-btn {
+        min-width: 80px;
+        min-height: 48px;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .day-grid {
+        height: auto;
+        min-height: 720px; /* モバイルでは高さを縮小 */
+    }
+    
+    .timeline-wrapper {
+        min-height: 720px;
+    }
+    
+    .time-labels {
+        width: 50px;
+        font-size: 0.8rem;
+    }
+    
+    .time-labels .time {
+        padding-left: 2px;
+    }
+    
+    .slot-block {
+        font-size: 0.75rem;
+        padding: 6px;
+        min-height: 48px;
+    }
+    
+    .week-grid {
+        gap: 4px;
+        overflow-x: auto;
+    }
+    
+    .week-day-column {
+        min-width: 60px;
+        height: 600px;
+        min-height: 600px;
+    }
+    
+    .week-day-header {
+        font-size: 0.75rem;
+        padding: 4px 0;
+    }
+    
+    .month-grid {
+        gap: 4px;
+    }
+    
+    .month-cell {
+        padding: 8px;
+        min-height: 64px;
+    }
+    
+    .month-cell .date {
+        font-size: 0.8rem;
+    }
+    
+    .badge {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        min-width: 20px;
+        min-height: 20px;
+    }
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .content {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .page h2 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .user-info {
+    background-color: #3d3d3d;
+}
+
+[data-theme="dark"] .setting-item select,
+[data-theme="dark"] .setting-item input {
+    background-color: #3d3d3d;
+    color: #e0e0e0;
+    border-color: #555;
+}

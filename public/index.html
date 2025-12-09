@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visuy Cast</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <h1>Visuy Cast</h1>
+        </header>
+        
+        <main class="main">
+            <!-- ログイン画面 -->
+            <div id="login-page" class="page active">
+                <div class="content login-page-content">
+                    <div class="login-container">
+                        <h2>Visuy Cast</h2>
+                        <p class="login-subtitle">AIがあなたの「やる気の波」を管理します</p>
+                        <div id="login-section" class="login-section">
+                            <button id="google-signin-btn" class="btn btn-google">
+                                <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+                                    <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+                                    <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.348 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/>
+                                    <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"/>
+                                </svg>
+                                <span>Googleでログイン</span>
+                            </button>
+                        </div>
+                        <div id="logged-in-section" class="logged-in-section" style="display: none;">
+                            <div class="user-profile">
+                                <img id="user-avatar" src="" alt="ユーザー画像" class="user-avatar" style="display: none;">
+                                <div class="user-details">
+                                    <p id="user-name" class="user-name"></p>
+                                    <p id="user-email" class="user-email"></p>
+                                </div>
+                            </div>
+                            <button id="logout-btn" class="btn btn-secondary">ログアウト</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="dashboard-page" class="page">
+                <h2>ダッシュボード</h2>
+                <div class="content">
+                    <div id="dashboard-content">
+                        <!-- 行動タイプ診断 -->
+                        <div class="dashboard-card">
+                            <h3>あなたのタイプ</h3>
+                            <div id="user-type-display" class="user-type-display">
+                                <p class="loading-message">データを分析中...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 今週の成果 -->
+                        <div class="dashboard-card">
+                            <h3>今週の成果</h3>
+                            <div id="weekly-achievements" class="weekly-achievements">
+                                <p class="loading-message">データを読み込み中...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- やる気の波分析 -->
+                        <div class="dashboard-card">
+                            <h3>やる気の波分析</h3>
+                            <div id="motivation-wave" class="motivation-wave">
+                                <p class="loading-message">グラフを準備中...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- タスク一覧 -->
+                        <div class="dashboard-card">
+                            <h3>タスク一覧</h3>
+                            <div id="task-list" class="task-list">
+                                <p class="loading-message">タスクを読み込み中...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="main-page" class="page">
+                <div id="main-off-mode" class="main-mode active">
+                    <div class="mode-content">
+                        <div class="character-container">
+                            <div class="character character-off">
+                                <img src="images/icons/hotel_24dp_3498DB_FILL0_wght400_GRAD0_opsz24.svg" alt="OFFモード" class="character-icon" />
+                            </div>
+                            <p class="character-message">一緒に休みましょう。今はサボる時間です。</p>
+                        </div>
+                        <div class="mode-info">
+                            <p class="mode-title">OFFモード（公認サボり）</p>
+                            <p class="mode-subtitle">罪悪感なく、しっかり休みましょう</p>
+                        </div>
+                        <button id="switch-to-on-btn" class="btn btn-primary">ONモードにする</button>
+                    </div>
+                </div>
+                <div id="main-on-mode" class="main-mode">
+                    <div class="mode-content">
+                        <div class="character-container">
+                            <div class="character character-on">
+                                <img src="images/icons/fitness_center_24dp_F39C12_FILL0_wght400_GRAD0_opsz24.svg" alt="ONモード" class="character-icon" />
+                            </div>
+                            <p class="character-message">頑張りましょう！一緒にタスクを進めます。</p>
+                        </div>
+                        <div class="mode-info">
+                            <p class="mode-title">ONモード（集中）</p>
+                            <div id="timer-display" class="timer-display">25:00</div>
+                            <div class="timer-progress-container">
+                                <div class="timer-progress-bar">
+                                    <div id="timer-progress" class="timer-progress-fill"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="task-card-container" class="task-card-container">
+                            <div id="task-card" class="task-card">
+                                <p class="no-task-message">タスクを登録すると、ここに表示されます</p>
+                            </div>
+                        </div>
+                        <div class="swipe-hints">
+                            <span class="swipe-hint swipe-right">← 今やる！</span>
+                            <span class="swipe-hint swipe-left">AIに任せる →</span>
+                        </div>
+                        <button id="switch-to-off-btn" class="btn btn-secondary">OFFモードに戻る</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="schedule-page" class="page">
+                <h2>スケジュール</h2>
+                <div class="content">
+                    <div class="tabs tabs-schedule">
+                        <button class="tab-btn active" data-view="today">Today</button>
+                        <button class="tab-btn" data-view="week">Week</button>
+                        <button class="tab-btn" data-view="month">Month</button>
+                    </div>
+                    <div id="schedule-container">
+                        <div id="schedule-today" class="schedule-view active"></div>
+                        <div id="schedule-week" class="schedule-view"></div>
+                        <div id="schedule-month" class="schedule-view"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="settings-page" class="page">
+                <h2>設定</h2>
+                <div class="content">
+                    <div class="settings-section">
+                        <h3>アプリ設定</h3>
+                        <div class="setting-item">
+                            <label for="theme-select">テーマ:</label>
+                            <select id="theme-select">
+                                <option value="light">ライト</option>
+                                <option value="dark">ダーク</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>ON/OFF時間設定</h3>
+                        <div class="setting-item">
+                            <label for="on-time-start">ON時間（開始）:</label>
+                            <input type="time" id="on-time-start" class="form-input">
+                        </div>
+                        <div class="setting-item">
+                            <label for="on-time-end">ON時間（終了）:</label>
+                            <input type="time" id="on-time-end" class="form-input">
+                        </div>
+                        <div class="setting-item">
+                            <label for="off-time-start">OFF時間（開始）:</label>
+                            <input type="time" id="off-time-start" class="form-input">
+                        </div>
+                        <div class="setting-item">
+                            <label for="off-time-end">OFF時間（終了）:</label>
+                            <input type="time" id="off-time-end" class="form-input">
+                        </div>
+                        <button id="save-onoff-time-btn" class="btn btn-primary">保存</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <nav class="nav-footer">
+                <button id="schedule-btn" class="nav-footer-btn" data-page="schedule">
+                    <img src="images/icons/schedule_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="スケジュール" class="nav-icon" />
+                    <span class="nav-label">スケジュール</span>
+                </button>
+                <button id="main-btn" class="nav-footer-btn active" data-page="main">
+                    <img src="images/icons/home_24dp_3498DB_FILL0_wght400_GRAD0_opsz24.svg" alt="メイン" class="nav-icon" />
+                    <span class="nav-label">メイン</span>
+                </button>
+                <button id="dashboard-btn" class="nav-footer-btn" data-page="dashboard">
+                    <img src="images/icons/dashboard_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="ダッシュボード" class="nav-icon" />
+                    <span class="nav-label">ダッシュボード</span>
+                </button>
+            </nav>
+            <p class="footer-copyright">&copy; 2024 Visuy Cast. All rights reserved.</p>
+        </footer>
+
+        <!-- FAB (フローティングアクションボタン) -->
+        <button id="fab-btn" class="fab-btn">
+            <img src="images/icons/add_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg" alt="追加" class="fab-icon" />
+        </button>
+
+        <!-- タスク追加モーダル -->
+        <div id="task-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>タスクを追加</h3>
+                    <button class="modal-close" id="modal-close">
+                        <img src="images/icons/close_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="閉じる" class="modal-close-icon" />
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="task-name">タスク名</label>
+                        <input type="text" id="task-name" class="form-input" placeholder="例：レポート作成">
+                    </div>
+                    <div class="form-group">
+                        <label for="task-deadline">締切</label>
+                        <input type="datetime-local" id="task-deadline" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>感情マトリクス</label>
+                        <div id="emotion-matrix" class="emotion-matrix">
+                            <div class="matrix-axis">
+                                <div class="axis-label axis-y">達成感（やりたい）</div>
+                                <div class="matrix-grid" id="matrix-grid">
+                                    <!-- 2軸グラフのグリッド -->
+                                </div>
+                                <div class="axis-label axis-x">抵抗感（やりたくない）</div>
+                            </div>
+                            <div class="matrix-values">
+                                <span>達成感: <span id="achievement-value">50</span></span>
+                                <span>抵抗感: <span id="resistance-value">50</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="task-save-btn" class="btn btn-primary">保存</button>
+                    <button id="task-cancel-btn" class="btn btn-secondary">キャンセル</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Firebase設定（.env.localから自動生成） -->
+    <script src="js/config.js"></script>
+    <!-- Firebase SDK -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

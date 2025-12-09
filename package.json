@@ -1,0 +1,24 @@
+{
+  "name": "swippa-webapp",
+  "version": "1.0.0",
+  "description": "TypeScript + Firebase Web Application",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "load-env": "node scripts/load-env.js",
+    "serve": "npm run load-env && live-server public --port=3000"
+  },
+  "keywords": ["typescript", "firebase", "webapp"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "live-server": "^1.2.2",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "firebase": "^10.0.0"
+  }
+}
